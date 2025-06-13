@@ -23,7 +23,7 @@ It does not appear in the plugin menu, as it is designed to be invisible during 
 
 ## Updates
 
-Click here to check the latest releases: [here](https://github.com/reversedcodes/IDADiscordRpc/releases)
+Click here to check the latest releases: [here](https://github.com/reversedcodes/IDA-RPC/releases)
 
 
 ## License
