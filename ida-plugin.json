@@ -1,0 +1,12 @@
+{
+  "IDAMetadataDescriptorVersion": 1,
+  "plugin": {
+    "name": "IDA Discord RPC",
+    "entryPoint": "ida_discord_rpc.dll",
+    "categories": ["user-interface", "miscellaneous"],
+    "logoPath": "assets/discord_icon.png",
+    "idaVersions": ">=9.0",
+    "description": "IDA Discord RPC is a plugin that integrates Discord Rich Presence into IDA, displaying real-time information about your reverse engineering activity directly in your Discord profile. More features and updates are coming soon!",
+    "version": "1.0.0"
+  }
+}
