@@ -22,7 +22,7 @@ static void update_discord_presence()
 
 ida_rpc_mod::ida_rpc_mod()
 {
-    rpc = new idarpc::discord::RichPresence("1382097836572807199");
+    rpc = new idarpc::discord::RichPresence("1383163488251154462");
 
     idb_listener = new idarpc::listener::IDBListener();
     hook_event_listener(HT_IDB, idb_listener, 0);
