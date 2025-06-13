@@ -7,7 +7,8 @@ namespace idarpc::discord {
         DiscordEventHandlers handlers{};
         Discord_Initialize(app_id_, &handlers, 1, nullptr);
         initialized_ = true;
-        idarpc::log(LogLevel::Info, "Initialized Rich Presence.");
+        idarpc::log(LogLevel::Info, "Initializing Rich Presence...");
+
     }
 
     RichPresence::~RichPresence() {
@@ -43,7 +44,6 @@ namespace idarpc::discord {
             presence.smallImageText = small_image_text.c_str();
 
         Discord_UpdatePresence(&presence);
-        idarpc::log(LogLevel::Info, "Presence updated.");
     }
 
     void RichPresence::clear_presence() {

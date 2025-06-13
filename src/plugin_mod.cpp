@@ -17,12 +17,11 @@ static void update_discord_presence()
         return;
 
     rpc->update_presence("IDA Ready", idarpc::helper::get_filename(), "ida_icon", "IDA Pro", "", "");
-    idarpc::log(LogLevel::Info, "Updated Rich Presence.");
+    //idarpc::log(LogLevel::Info, "Updated Rich Presence.");
 }
 
 ida_rpc_mod::ida_rpc_mod()
 {
-    idarpc::log(LogLevel::Info, "Initializing Rich Presence...");
     rpc = new idarpc::discord::RichPresence("1382097836572807199");
 
     idb_listener = new idarpc::listener::IDBListener();
