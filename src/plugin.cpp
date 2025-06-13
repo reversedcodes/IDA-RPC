@@ -11,7 +11,7 @@ static plugmod_t* idaapi init(void)
 
 plugin_t PLUGIN = {
     IDP_INTERFACE_VERSION,
-    PLUGIN_MOD,
+    PLUGIN_HIDE,
     init,
     nullptr,
     nullptr,
