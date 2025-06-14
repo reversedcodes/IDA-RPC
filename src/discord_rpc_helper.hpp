@@ -4,10 +4,11 @@
 
 struct discord_helper_spec
 {
-    std::string state;
+    //std::string state;
     std::string details;
-    std::string large_image_key;
-    std::string large_image_text;
+    //std::string large_image_key;
+    //std::string large_image_text;
+
     std::string small_image_key;
     std::string small_image_text;
 };

@@ -2,9 +2,20 @@
 #include "discord/rich_presence.hpp"
 #include "ida_helper.hpp"
 
-#include <string>
+#include <pro.h>
+#include <kernwin.hpp>
+#include <idp.hpp>
+#include <loader.hpp>
+#include <name.hpp>
+#include <bytes.hpp>
 
 extern idarpc::discord::RichPresence* rpc;
+
+std::string get_ida_version_string() {
+    char version[32] = {0};
+    get_kernel_version(version, sizeof(version));
+    return std::string(version);
+}
 
 namespace idarpc::discord_rpc_helper {
 
@@ -14,10 +25,19 @@ namespace idarpc::discord_rpc_helper {
             return;
 
         DiscordRichPresence presence{};
-        presence.state = spec.state.c_str();
-        presence.details = spec.details.empty() ? idahelper::get_filename() : spec.details.c_str();
-        presence.largeImageKey = spec.large_image_key.c_str();
-        presence.largeImageText = spec.large_image_text.c_str();
+
+        if(idarpc::idahelper::is_ida_home_version()) {
+            presence.largeImageKey = "ida_home";
+            std::string homeText = "IDA HOME " + get_ida_version_string();
+            presence.largeImageText = homeText.c_str();
+        } else {
+            presence.largeImageKey = "ida_pro";
+            std::string proText = "IDA PRO" + get_ida_version_string();
+            presence.largeImageText = proText.c_str();
+        }
+        
+        presence.state = idahelper::get_filename();
+        presence.details = spec.details.c_str();
         presence.smallImageKey = spec.small_image_key.c_str();
         presence.smallImageText = spec.small_image_text.c_str();
 
