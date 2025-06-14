@@ -11,17 +11,9 @@
 #include <funcs.hpp>
 #include <loader.hpp>
 #include <nalt.hpp>
+#include <diskio.hpp>
 
 idarpc::discord::RichPresence *rpc = nullptr;
-
-static void update_discord_presence()
-{
-    if (!rpc)
-        return;
-
-    
-    discord_helper_spec spec;
-}
 
 void ida_rpc_mod::init_events() {
     idb_listener = new idarpc::listener::IDBListener();
@@ -74,9 +66,14 @@ void ida_rpc_mod::clear_rich_presence() {
 //Create
 ida_rpc_mod::ida_rpc_mod()
 {
+
     init_discord_rpc();
     init_events();
-    update_discord_presence();
+
+    discord_helper_spec spec;
+    spec.details = "Hello World";
+
+    idarpc::discord_rpc_helper::update_presence(spec);
 }
 
 //Close
@@ -90,6 +87,5 @@ ida_rpc_mod::~ida_rpc_mod()
 bool ida_rpc_mod::run(size_t arg)
 {
     idarpc::log(LogLevel::Info, "Plugin run() triggered.");
-    update_discord_presence();
     return true;
 }
