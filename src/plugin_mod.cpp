@@ -16,11 +16,11 @@
 idarpc::discord::RichPresence *rpc = nullptr;
 
 void ida_rpc_mod::init_events() {
-    idb_listener = new idarpc::listener::IDBListener();
-    hook_event_listener(HT_IDB, idb_listener, 0);
+    //idb_listener = new idarpc::listener::IDBListener();
+    //hook_event_listener(HT_IDB, idb_listener, 0);
 
-    ui_listener = new idarpc::listener::UIListener();
-    hook_event_listener(HT_UI, ui_listener, 0);
+    //ui_listener = new idarpc::listener::UIListener();
+    //hook_event_listener(HT_UI, ui_listener, 0);
 
     view_listener = new idarpc::listener::ViewListener();
     hook_event_listener(HT_VIEW, view_listener, 0);
