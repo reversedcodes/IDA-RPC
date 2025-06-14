@@ -10,14 +10,7 @@ namespace idarpc::discord {
         explicit RichPresence(const char* app_id);
         ~RichPresence();
 
-        void update_presence(
-            const std::string& state,
-            const std::string& details = "",
-            const std::string& large_image_key = "",
-            const std::string& large_image_text = "",
-            const std::string& small_image_key = "",
-            const std::string& small_image_text = ""
-        );
+        void update_presence(DiscordRichPresence rpc);
 
         void clear_presence();
 

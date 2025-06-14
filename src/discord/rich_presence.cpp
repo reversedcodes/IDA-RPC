@@ -18,32 +18,11 @@ namespace idarpc::discord {
         }
     }
 
-    void RichPresence::update_presence(
-        const std::string& state,
-        const std::string& details,
-        const std::string& large_image_key,
-        const std::string& large_image_text,
-        const std::string& small_image_key,
-        const std::string& small_image_text
-    ) {
+    void RichPresence::update_presence(DiscordRichPresence rpc) {
         if (!initialized_) 
             return;
 
-        DiscordRichPresence presence{};
-        presence.state = state.c_str();
-        presence.details = details.c_str();
-
-        if (!large_image_key.empty())
-            presence.largeImageKey = large_image_key.c_str();
-        if (!large_image_text.empty())
-            presence.largeImageText = large_image_text.c_str();
-
-        if (!small_image_key.empty())
-            presence.smallImageKey = small_image_key.c_str();
-        if (!small_image_text.empty())
-            presence.smallImageText = small_image_text.c_str();
-
-        Discord_UpdatePresence(&presence);
+        Discord_UpdatePresence(&rpc);
     }
 
     void RichPresence::clear_presence() {
