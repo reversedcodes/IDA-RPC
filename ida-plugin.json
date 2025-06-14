@@ -2,6 +2,7 @@
   "IDAMetadataDescriptorVersion": 1,
   "plugin": {
     "name": "IDA Discord RPC",
+    "entryPoint": "IdaDiscordRpc_1.0.1.dll",
     "categories": ["collaboration-and-productivity", "ui-ux-and-visualization"],
     "logoPath": "assets/ida-rpc.png",
     "idaVersions": ">=9.0",
