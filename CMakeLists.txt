@@ -17,7 +17,9 @@ include_directories(${IDASDK_PATH}/include)
 add_library(ida_discord_rpc SHARED
     src/plugin.cpp
     src/plugin_mod.cpp
-    src/helper.cpp
+
+    src/ida_helper.cpp
+    src/discord_rpc_helper.cpp
     
     src/log/log.cpp
     src/log/log_level.cpp

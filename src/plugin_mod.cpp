@@ -1,7 +1,10 @@
 #include "plugin_mod.hpp"
 #include "log/log.hpp"
+
 #include "discord/rich_presence.hpp"
-#include "helper.hpp"
+#include "discord_rpc_helper.hpp"
+
+#include "ida_helper.hpp"
 
 #include <kernwin.hpp>
 #include <name.hpp>
@@ -16,14 +19,11 @@ static void update_discord_presence()
     if (!rpc)
         return;
 
-    rpc->update_presence("IDA Ready", idarpc::helper::get_filename(), "ida_icon", "IDA Pro", "", "");
-    //idarpc::log(LogLevel::Info, "Updated Rich Presence.");
+    
+    discord_helper_spec spec;
 }
 
-ida_rpc_mod::ida_rpc_mod()
-{
-    rpc = new idarpc::discord::RichPresence("1383163488251154462");
-
+void ida_rpc_mod::init_events() {
     idb_listener = new idarpc::listener::IDBListener();
     hook_event_listener(HT_IDB, idb_listener, 0);
 
@@ -32,14 +32,13 @@ ida_rpc_mod::ida_rpc_mod()
 
     view_listener = new idarpc::listener::ViewListener();
     hook_event_listener(HT_VIEW, view_listener, 0);
-
-    update_discord_presence();
 }
 
-ida_rpc_mod::~ida_rpc_mod()
-{
-    idarpc::log(LogLevel::Warning, "Shutting down...");
+void ida_rpc_mod::init_discord_rpc() {
+    rpc = new idarpc::discord::RichPresence("1383503123666173952");
+}
 
+void ida_rpc_mod::disabled_events() {
     if (idb_listener)
     {
         unhook_event_listener(HT_IDB, idb_listener);
@@ -61,12 +60,31 @@ ida_rpc_mod::~ida_rpc_mod()
         view_listener = nullptr;
     }
 
+}
+
+void ida_rpc_mod::clear_rich_presence() {
     if (rpc)
     {
         rpc->clear_presence();
         delete rpc;
         rpc = nullptr;
     }
+}
+
+//Create
+ida_rpc_mod::ida_rpc_mod()
+{
+    init_discord_rpc();
+    init_events();
+    update_discord_presence();
+}
+
+//Close
+ida_rpc_mod::~ida_rpc_mod()
+{
+    idarpc::log(LogLevel::Warning, "Shutting down...");
+    ida_rpc_mod::disabled_events();
+    ida_rpc_mod::clear_rich_presence();
 }
 
 bool ida_rpc_mod::run(size_t arg)
