@@ -25,8 +25,7 @@ It does not appear in the plugin menu, as it is designed to be invisible during 
 
 Click here to check the latest releases: [here](https://github.com/reversedcodes/IDA-RPC/releases)
 
-
 ## License
 
-This project is licensed under the **MIT License**.  
-See the [LICENSE](LICENSE) file for more details.
+This project is licensed under the [Apache License 2.0](LICENSE).  
+You are free to use, modify, and distribute this software under the terms of the license.
