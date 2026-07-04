@@ -14,8 +14,17 @@ namespace idarpc::discord {
 
         void clear_presence();
 
+        void run_callbacks();
+
+        void reconnect();
+
+        static bool is_connected();
+        static const char *connected_username();
+
     private:
-        const char* app_id_;
+        void initialize();
+
+        std::string app_id_;
         bool initialized_ = false;
     };
 

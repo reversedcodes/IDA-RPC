@@ -1,0 +1,80 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+env:
+  IDASDK_REF: d5db59ab4e9d2ae92038e9520082affd0da6fe20
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact: linux-x64
+            binary: build/ida_plugins/ida_discord_rpc.so
+          - os: windows-latest
+            artifact: windows-x64
+            binary: build/ida_plugins/ida_discord_rpc.dll
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: HexRaysSA/ida-sdk
+          ref: ${{ env.IDASDK_REF }}
+          path: lib/ida-sdk
+
+      - if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y ninja-build
+
+      - if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - run: cmake --build build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ida_discord_rpc-${{ matrix.artifact }}
+          path: ${{ matrix.binary }}
+          if-no-files-found: error
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+
+      - run: |
+          mkdir -p pkg/assets
+          cp ida-plugin.json pkg/
+          cp readme.md pkg/README.md
+          cp assets/ida-discord.png pkg/assets/
+          cp dist/ida_discord_rpc-linux-x64/ida_discord_rpc.so pkg/
+          cp dist/ida_discord_rpc-windows-x64/ida_discord_rpc.dll pkg/
+          cd pkg && zip -r "../ida_discord_rpc-${GITHUB_REF_NAME}.zip" . && cd ..
+          unzip -l ida_discord_rpc-*.zip
+
+      - run: pipx install ida-hcli
+
+      - run: hcli plugin lint "ida_discord_rpc-${GITHUB_REF_NAME}.zip"
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: ida_discord_rpc-*.zip

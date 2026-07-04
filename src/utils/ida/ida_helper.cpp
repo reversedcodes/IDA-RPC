@@ -3,9 +3,9 @@
 #include <idp.hpp>
 #include <diskio.hpp>
 
-#include "log/log.hpp"
+#include "utils/log/log.hpp"
 
-const char *idarpc::idahelper::get_filename()
+std::string idarpc::idahelper::get_filename()
 {
     char filename_buf[260] = {};
     get_root_filename(filename_buf, sizeof(filename_buf));

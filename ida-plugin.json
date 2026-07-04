@@ -1,12 +1,20 @@
 {
+  "$schema": "https://hcli.docs.hex-rays.com/schemas/ida-plugin.json",
   "IDAMetadataDescriptorVersion": 1,
   "plugin": {
-    "name": "IDA Discord RPC",
-    "entryPoint": "IdaDiscordRpc_1.0.1.dll",
+    "name": "IDA-Discord-RPC",
+    "entryPoint": "ida_discord_rpc",
+    "version": "1.1.0",
+    "idaVersions": ["9.0", "9.1", "9.2", "9.3"],
+    "platforms": ["windows-x86_64", "linux-x86_64"],
+    "description": "IDA Discord RPC integrates Discord Rich Presence into IDA, displaying real-time information about your reverse engineering activity directly in your Discord profile: current function, view, file, debugging status and more - all configurable from a settings dialog.",
+    "license": "Apache-2.0",
+    "logoPath": "assets/ida-discord.png",
     "categories": ["collaboration-and-productivity", "ui-ux-and-visualization"],
-    "logoPath": "assets/ida-rpc.png",
-    "idaVersions": ">=9.0",
-    "description": "IDA Discord RPC is a plugin that integrates Discord Rich Presence into IDA, displaying real-time information about your reverse engineering activity directly in your Discord profile. More features and updates are coming soon!",
-    "version": "1.0.1"
+    "keywords": ["discord", "rich-presence", "rpc", "presence", "status"],
+    "urls": {
+      "repository": "https://github.com/reversedcodes/IDA-RPC"
+    },
+    "authors": [{ "name": "Reversed Codes", "email": "REDACTED" }]
   }
 }

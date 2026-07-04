@@ -1,9 +1,9 @@
 #include "ui_listener.hpp"
-#include "log/log.hpp"
+#include "utils/log/log.hpp"
 
-#include <loader.hpp>     
-#include <name.hpp>       
-#include <funcs.hpp>     
+#include <loader.hpp>
+#include <name.hpp>
+#include <funcs.hpp>
 
 ssize_t idaapi idarpc::listener::UIListener::on_event(ssize_t code, va_list va)
 {
