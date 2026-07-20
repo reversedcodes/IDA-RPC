@@ -15,6 +15,6 @@
     "urls": {
       "repository": "https://github.com/reversedcodes/IDA-RPC"
     },
-    "authors": [{ "name": "Reversed Codes", "email": "REDACTED" }]
+    "authors": [{ "name": "Reversed Codes", "email": "your-username@users.noreply.github.com" }]
   }
 }
