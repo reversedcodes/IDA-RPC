@@ -40,7 +40,11 @@ namespace idarpc::gui
             }
         };
 
-        settings_action_handler_t g_handler;
+        // The kernel destroys the handler when the action is unregistered, so it
+        // has to be allocated on the heap (action_handler_t routes new/delete
+        // through qalloc/qfree). A static instance would make the kernel call
+        // qfree() on a .bss address and abort the process.
+        settings_action_handler_t *g_handler = nullptr;
 
         int idaapi reset_settings_cb(int, form_actions_t &fa)
         {
@@ -147,14 +151,22 @@ namespace idarpc::gui
 
         create_menu(MENU_NAME, MENU_LABEL, MENU_ANCHOR);
 
+        g_handler = new settings_action_handler_t();
+
         const action_desc_t settings_desc = ACTION_DESC_LITERAL_OWNER(
-            ACTION_NAME, ACTION_LABEL, &g_handler, nullptr,
+            ACTION_NAME, ACTION_LABEL, g_handler, nullptr,
             nullptr, ACTION_TOOLTIP, -1, 0);
 
         if (register_action(settings_desc))
+        {
             attach_action_to_menu(MENU_PATH, ACTION_NAME, SETMENU_APP);
+        }
         else
+        {
+            delete g_handler;
+            g_handler = nullptr;
             idarpc::log(LogLevel::Error, "Failed to register the settings action.");
+        }
     }
 
     void remove_settings_menu()
@@ -163,7 +175,8 @@ namespace idarpc::gui
             return;
 
         detach_action_from_menu(MENU_PATH, ACTION_NAME);
-        unregister_action(ACTION_NAME);
+        unregister_action(ACTION_NAME); // destroys g_handler
+        g_handler = nullptr;
         delete_menu(MENU_NAME);
     }
 

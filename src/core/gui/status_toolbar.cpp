@@ -37,7 +37,11 @@ namespace idarpc::gui {
             }
         };
 
-        reconnect_action_handler_t g_handler;
+        // The kernel destroys the handler when the action is unregistered, so it
+        // has to be allocated on the heap (action_handler_t routes new/delete
+        // through qalloc/qfree). A static instance would make the kernel call
+        // qfree() on a .bss address and abort the process.
+        reconnect_action_handler_t *g_handler = nullptr;
 
     }
 
@@ -46,13 +50,17 @@ namespace idarpc::gui {
         if (g_refs++ > 0)
             return;
 
+        g_handler = new reconnect_action_handler_t();
+
         const action_desc_t desc = ACTION_DESC_LITERAL_OWNER(
-            RECONNECT_NAME, RECONNECT_LABEL, &g_handler, nullptr,
+            RECONNECT_NAME, RECONNECT_LABEL, g_handler, nullptr,
             nullptr, RECONNECT_TOOLTIP, -1, 0);
 
         if (!register_action(desc))
         {
             idarpc::log(LogLevel::Error, "Failed to register the reconnect action.");
+            delete g_handler;
+            g_handler = nullptr;
             g_refs = 0;
             return;
         }
@@ -69,7 +77,8 @@ namespace idarpc::gui {
             return;
 
         detach_action_from_menu(MENU_PATH, RECONNECT_NAME);
-        unregister_action(RECONNECT_NAME);
+        unregister_action(RECONNECT_NAME); // destroys g_handler
+        g_handler = nullptr;
         g_have_state = false;
     }
 
