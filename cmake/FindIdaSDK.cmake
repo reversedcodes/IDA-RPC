@@ -3,7 +3,18 @@ if(WIN32)
     set(_idasdk_libdir "x64_win_vc_64")
     set(_idasdk_platform_def "__NT__")
 elseif(APPLE)
-    if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm64|aarch64")
+    set(_idasdk_mac_arch "${CMAKE_SYSTEM_PROCESSOR}")
+    if(CMAKE_OSX_ARCHITECTURES)
+        list(LENGTH CMAKE_OSX_ARCHITECTURES _idasdk_mac_arch_count)
+        if(_idasdk_mac_arch_count GREATER 1)
+            message(FATAL_ERROR
+                "The IDA SDK ships a separate import library per macOS architecture, "
+                "so a multi-architecture build cannot link. Configure one build tree "
+                "per architecture and merge the resulting dylibs with lipo.")
+        endif()
+        set(_idasdk_mac_arch "${CMAKE_OSX_ARCHITECTURES}")
+    endif()
+    if(_idasdk_mac_arch MATCHES "arm64|aarch64")
         set(_idasdk_libdir "arm64_mac_clang_64")
     else()
         set(_idasdk_libdir "x64_mac_clang_64")
@@ -75,6 +86,8 @@ endif()
 
 mark_as_advanced(IdaSDK_INCLUDE_DIR IdaSDK_LIBRARY)
 
+unset(_idasdk_mac_arch)
+unset(_idasdk_mac_arch_count)
 unset(_idasdk_libdir)
 unset(_idasdk_platform_def)
 unset(_idasdk_hints)
