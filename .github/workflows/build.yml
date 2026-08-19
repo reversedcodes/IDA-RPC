@@ -19,12 +19,15 @@ jobs:
           - os: ubuntu-latest
             artifact: linux-x64
             binary: build/ida_plugins/ida_discord_rpc.so
+            cmake_args: ''
           - os: windows-latest
             artifact: windows-x64
             binary: build/ida_plugins/ida_discord_rpc.dll
+            cmake_args: ''
           - os: macos-latest
-            artifact: macos-arm64
+            artifact: macos-universal
             binary: build/ida_plugins/ida_discord_rpc.dylib
+            cmake_args: '-DCMAKE_OSX_ARCHITECTURES=arm64'
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -41,9 +44,27 @@ jobs:
       - if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
 
-      - run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release ${{ matrix.cmake_args }}
 
       - run: cmake --build build
+
+      - if: runner.os == 'macOS'
+        run: |
+          cmake -S . -B build-x64 -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES=x86_64
+          cmake --build build-x64
+          lipo -create \
+            build/ida_plugins/ida_discord_rpc.dylib \
+            build-x64/ida_plugins/ida_discord_rpc.dylib \
+            -output ida_discord_rpc-universal.dylib
+          mv ida_discord_rpc-universal.dylib build/ida_plugins/ida_discord_rpc.dylib
+          archs=$(lipo -archs build/ida_plugins/ida_discord_rpc.dylib)
+          echo "universal dylib architectures: $archs"
+          for want in arm64 x86_64; do
+            case " $archs " in
+              *" $want "*) ;;
+              *) echo "::error::missing $want slice in universal dylib"; exit 1 ;;
+            esac
+          done
 
       - uses: actions/upload-artifact@v4
         with:
@@ -71,7 +92,7 @@ jobs:
           cp assets/ida-discord.png pkg/assets/
           cp dist/ida_discord_rpc-linux-x64/ida_discord_rpc.so pkg/
           cp dist/ida_discord_rpc-windows-x64/ida_discord_rpc.dll pkg/
-          cp dist/ida_discord_rpc-macos-arm64/ida_discord_rpc.dylib pkg/
+          cp dist/ida_discord_rpc-macos-universal/ida_discord_rpc.dylib pkg/
           cd pkg && zip -r "../ida_discord_rpc-${GITHUB_REF_NAME}.zip" . && cd ..
           unzip -l ida_discord_rpc-*.zip
 
