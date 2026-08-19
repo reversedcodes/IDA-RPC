@@ -22,6 +22,42 @@ IDA Discord RPC is a plugin for IDA that displays your current activity as Disco
 
 ## Installation
 
+### Using HCLI (recommended)
+
+The plugin ships [IDA plugin metadata](ida-plugin.json), so the [Hex-Rays CLI](https://hcli.docs.hex-rays.com/) plugin manager can install it, place the right binary for your platform and keep it updated:
+
+```bash
+hcli plugin install IDA-Discord-RPC@https://github.com/reversedcodes/IDA-RPC
+```
+
+Once the plugin is listed in the Hex-Rays plugin repository, the short form works as well:
+
+```bash
+hcli plugin install IDA-Discord-RPC
+```
+
+Managing the installation:
+
+```bash
+hcli plugin status
+hcli plugin upgrade IDA-Discord-RPC
+hcli plugin uninstall IDA-Discord-RPC
+```
+
+If HCLI is not installed yet, on macOS and Linux:
+
+```bash
+curl -LsSf https://hcli.docs.hex-rays.com/install | sh
+```
+
+On Windows, in PowerShell:
+
+```powershell
+iwr -useb https://hcli.docs.hex-rays.com/install.ps1 | iex
+```
+
+### Manual
+
 Download the ZIP from the [latest release](https://github.com/reversedcodes/IDA-RPC/releases) and copy the binary for your OS into your IDA plugins directory:
 
 | OS | Plugins directory |
