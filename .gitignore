@@ -6,3 +6,4 @@ compile_commands.json
 scripts/
 lib/
 idasdk.tar
+.DS_Store

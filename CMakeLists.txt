@@ -63,3 +63,7 @@ set_target_properties(ida_discord_rpc PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${IDA_PLUGIN_OUTPUT_DIR}
     OUTPUT_NAME "ida_discord_rpc"
 )
+
+if(APPLE)
+    set_target_properties(ida_discord_rpc PROPERTIES SUFFIX ".dylib")
+endif()
