@@ -18,7 +18,7 @@ IDA Discord RPC is a plugin for IDA that displays your current activity as Disco
 ## Compatibility
 
 - IDA Pro / IDA Home 9.x
-- Windows x86-64 (`.dll`) and Linux x86-64 (`.so`)
+- Windows x86-64 (`.dll`), Linux x86-64 (`.so`), macOS x86-64/arm64 (`.dylib`)
 
 ## Installation
 
@@ -28,6 +28,7 @@ Download the ZIP from the [latest release](https://github.com/reversedcodes/IDA-
 | --- | --- |
 | Windows | `%APPDATA%\Hex-Rays\IDA Pro\plugins` |
 | Linux | `~/.idapro/plugins` |
+| macOS | `~/Library/Application Support/Hex-Rays/IDA Pro/plugins` |
 
 Restart IDA afterwards. Configure the plugin via the **Discord** menu in the menubar.
 
@@ -40,6 +41,8 @@ git clone https://github.com/HexRaysSA/ida-sdk lib/ida-sdk
 cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 ```
+
+On macOS, set `IDASDK_ROOT` to your IDA installation (e.g., `/Applications/IDA Professional 9.3.app`) or pass `-DIdaSDK_LIBRARY=/path/to/libida.dylib`.
 
 The plugin is written against the open-source [IDA SDK](https://github.com/HexRaysSA/ida-sdk); Discord integration uses [discord-rpc](https://github.com/discord/discord-rpc) (fetched automatically).
 
