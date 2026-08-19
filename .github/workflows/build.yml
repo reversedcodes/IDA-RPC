@@ -23,7 +23,7 @@ jobs:
             artifact: windows-x64
             binary: build/ida_plugins/ida_discord_rpc.dll
           - os: macos-latest
-            artifact: macos-x64
+            artifact: macos-arm64
             binary: build/ida_plugins/ida_discord_rpc.dylib
     runs-on: ${{ matrix.os }}
     steps:
@@ -71,7 +71,7 @@ jobs:
           cp assets/ida-discord.png pkg/assets/
           cp dist/ida_discord_rpc-linux-x64/ida_discord_rpc.so pkg/
           cp dist/ida_discord_rpc-windows-x64/ida_discord_rpc.dll pkg/
-          cp dist/ida_discord_rpc-macos-x64/ida_discord_rpc.dylib pkg/
+          cp dist/ida_discord_rpc-macos-arm64/ida_discord_rpc.dylib pkg/
           cd pkg && zip -r "../ida_discord_rpc-${GITHUB_REF_NAME}.zip" . && cd ..
           unzip -l ida_discord_rpc-*.zip
 
