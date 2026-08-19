@@ -6,7 +6,7 @@
     "entryPoint": "ida_discord_rpc",
     "version": "1.1.0",
     "idaVersions": ["9.0", "9.1", "9.2", "9.3", "9.4"],
-    "platforms": ["windows-x86_64", "linux-x86_64"],
+    "platforms": ["windows-x86_64", "linux-x86_64", "macos-x86_64"],
     "description": "IDA Discord RPC integrates Discord Rich Presence into IDA, displaying real-time information about your reverse engineering activity directly in your Discord profile: current function, view, file, debugging status and more - all configurable from a settings dialog.",
     "license": "Apache-2.0",
     "logoPath": "assets/ida-discord.png",
