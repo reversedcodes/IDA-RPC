@@ -1,9 +1,9 @@
-#include "ida_helper.hpp"
+#include "ida_discord_rpc/util/ida_helper.hpp"
 
 #include <idp.hpp>
 #include <diskio.hpp>
 
-#include "utils/log/log.hpp"
+#include "ida_discord_rpc/util/log.hpp"
 
 std::string idarpc::idahelper::get_filename()
 {

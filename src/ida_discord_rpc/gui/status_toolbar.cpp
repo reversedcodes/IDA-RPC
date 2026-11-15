@@ -1,7 +1,7 @@
-#include "status_toolbar.hpp"
+#include "ida_discord_rpc/gui/status_toolbar.hpp"
 
-#include "utils/log/log.hpp"
-#include "core/discord/discord_rpc_helper.hpp"
+#include "ida_discord_rpc/util/log.hpp"
+#include "ida_discord_rpc/discord/discord_rpc_helper.hpp"
 
 #include <ida.hpp>
 #include <kernwin.hpp>

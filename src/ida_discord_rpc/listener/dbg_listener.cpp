@@ -1,5 +1,5 @@
-#include "dbg_listener.hpp"
-#include "core/discord/discord_rpc_helper.hpp"
+#include "ida_discord_rpc/listener/dbg_listener.hpp"
+#include "ida_discord_rpc/discord/discord_rpc_helper.hpp"
 
 #include <dbg.hpp>
 

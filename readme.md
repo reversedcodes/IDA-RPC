@@ -17,31 +17,25 @@ IDA Discord RPC is a plugin for IDA that displays your current activity as Disco
 
 ## Compatibility
 
-- IDA Pro / IDA Home 9.x
+- IDA Pro / IDA Home 9.0 - 9.5, with a dedicated build for every IDA version
 - Windows x86-64 (`.dll`), Linux x86-64 (`.so`), macOS x86-64/arm64 (`.dylib`)
 
 ## Installation
 
 ### Using HCLI (recommended)
 
-The plugin ships [IDA plugin metadata](ida-plugin.json), so the [Hex-Rays CLI](https://hcli.docs.hex-rays.com/) plugin manager can install it, place the right binary for your platform and keep it updated:
+The plugin ships [IDA plugin metadata](ida-plugin.json), so the [Hex-Rays CLI](https://hcli.docs.hex-rays.com/) plugin manager can install it, pick the build for your IDA version and platform and keep it updated:
 
 ```bash
-hcli plugin install IDA-Discord-RPC@https://github.com/reversedcodes/IDA-RPC
-```
-
-Once the plugin is listed in the Hex-Rays plugin repository, the short form works as well:
-
-```bash
-hcli plugin install IDA-Discord-RPC
+hcli plugin install ida-discord-rpc
 ```
 
 Managing the installation:
 
 ```bash
 hcli plugin status
-hcli plugin upgrade IDA-Discord-RPC
-hcli plugin uninstall IDA-Discord-RPC
+hcli plugin upgrade ida-discord-rpc
+hcli plugin uninstall ida-discord-rpc
 ```
 
 If HCLI is not installed yet, on macOS and Linux:
@@ -58,7 +52,7 @@ iwr -useb https://hcli.docs.hex-rays.com/install.ps1 | iex
 
 ### Manual
 
-Download the ZIP from the [latest release](https://github.com/reversedcodes/IDA-RPC/releases) and copy the binary for your OS into your IDA plugins directory:
+Every [release](https://github.com/reversedcodes/IDA-RPC/releases) has one ZIP per IDA version, named `ida-discord-rpc-<IDA version>.zip` (for example `ida-discord-rpc-9.5.zip`). Download the one for your IDA version and either install it with `hcli plugin install ./ida-discord-rpc-9.5.zip` or copy the binary for your OS (`ida-discord-rpc.dll`, `.so` or `.dylib`) into your IDA plugins directory:
 
 | OS | Plugins directory |
 | --- | --- |
@@ -68,19 +62,43 @@ Download the ZIP from the [latest release](https://github.com/reversedcodes/IDA-
 
 Restart IDA afterwards. Configure the plugin via the **Discord** menu in the menubar.
 
+Releases before 1.3 named the binary `ida_discord_rpc`. Delete that file from your plugins directory when you update by hand, otherwise IDA loads both.
+
 ## Building from source
 
 ```bash
 git clone https://github.com/reversedcodes/IDA-RPC
 cd IDA-RPC
-git clone https://github.com/HexRaysSA/ida-sdk lib/ida-sdk
+git clone --depth 1 --branch v9.5.0-release https://github.com/HexRaysSA/ida-sdk lib/ida-sdk
 cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 ```
 
-On macOS, set `IDASDK_ROOT` to your IDA installation (e.g., `/Applications/IDA Professional 9.3.app`) or pass `-DIdaSDK_LIBRARY=/path/to/libida.dylib`.
+Check out the SDK tag of the IDA version you build for (`v<IDA version>.0-release`, 9.0 to 9.5). The plugin is written to `build/ida_plugins/ida-discord-rpc.<so|dll|dylib>`.
+
+On macOS, set `IDASDK_ROOT` to your IDA installation (e.g., `/Applications/IDA Professional 9.5.app`) or pass `-DIdaSDK_LIBRARY=/path/to/libida.dylib`.
 
 The plugin is written against the open-source [IDA SDK](https://github.com/HexRaysSA/ida-sdk); Discord integration uses [discord-rpc](https://github.com/discord/discord-rpc) (fetched automatically).
+
+### Project layout
+
+```
+ida-plugin.json            plugin metadata: name, version, supported IDA versions
+CMakeLists.txt             project setup, IDA SDK and discord-rpc lookup
+cmake/                     FindIdaSDK and discord-rpc fetch modules
+src/ida_discord_rpc/       plugin sources
+  plugin.cpp               plugin descriptor, the entry point IDA loads
+  plugin_mod.*             plugin lifecycle: startup, timer, shutdown
+  discord/                 Discord connection and presence rendering
+  gui/                     settings storage, settings dialog, Discord menu
+  listener/                IDA event listeners that report activity
+  util/                    logging and IDA helpers
+.github/                   build and release workflow, packaging script
+```
+
+### Releases
+
+`ida-plugin.json` drives the release. Pushing a tag that names its `version` (tag `1.3` for version `1.3.0`) builds the plugin against the SDK of every IDA version listed in `idaVersions`, on Windows, Linux and macOS, and publishes one archive per IDA version: `ida-discord-rpc-<IDA version>.zip`. To support a new IDA version, add it to `idaVersions`.
 
 ## License
 

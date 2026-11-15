@@ -2,7 +2,7 @@
 #include <idp.hpp>
 #include <loader.hpp>
 
-#include "plugin_mod.hpp"
+#include "ida_discord_rpc/plugin_mod.hpp"
 
 static plugmod_t* idaapi init(void)
 {

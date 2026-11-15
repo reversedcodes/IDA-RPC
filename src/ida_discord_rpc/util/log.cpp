@@ -1,4 +1,4 @@
-#include "log.hpp"
+#include "ida_discord_rpc/util/log.hpp"
 #include <idp.hpp>
 
 #include <chrono>

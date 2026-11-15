@@ -4,10 +4,10 @@
 #include <idp.hpp>
 #include <kernwin.hpp>
 
-#include "core/listener/ui_listener.hpp"
-#include "core/listener/idb_listener.hpp"
-#include "core/listener/view_listener.hpp"
-#include "core/listener/dbg_listener.hpp"
+#include "ida_discord_rpc/listener/ui_listener.hpp"
+#include "ida_discord_rpc/listener/idb_listener.hpp"
+#include "ida_discord_rpc/listener/view_listener.hpp"
+#include "ida_discord_rpc/listener/dbg_listener.hpp"
 
 class ida_rpc_mod : public plugmod_t {
      idarpc::listener::UIListener* ui_listener = nullptr;

@@ -1,6 +1,7 @@
-
+# The SDK names its library directories "<arch>_<platform>_64" since 9.4 and
+# "<arch>_<platform>_<compiler>_64" up to 9.3, so both spellings are searched.
 if(WIN32)
-    set(_idasdk_libdir "x64_win_vc_64")
+    set(_idasdk_libdirs "x64_win_64" "x64_win_vc_64")
     set(_idasdk_platform_def "__NT__")
 elseif(APPLE)
     set(_idasdk_mac_arch "${CMAKE_SYSTEM_PROCESSOR}")
@@ -15,15 +16,22 @@ elseif(APPLE)
         set(_idasdk_mac_arch "${CMAKE_OSX_ARCHITECTURES}")
     endif()
     if(_idasdk_mac_arch MATCHES "arm64|aarch64")
-        set(_idasdk_libdir "arm64_mac_clang_64")
+        set(_idasdk_libdirs "arm64_mac_64" "arm64_mac_clang_64")
     else()
-        set(_idasdk_libdir "x64_mac_clang_64")
+        set(_idasdk_libdirs "x64_mac_64" "x64_mac_clang_64")
     endif()
     set(_idasdk_platform_def "__MAC__")
 else()
-    set(_idasdk_libdir "x64_linux_gcc_64")
+    set(_idasdk_libdirs "x64_linux_64" "x64_linux_gcc_64")
     set(_idasdk_platform_def "__LINUX__")
 endif()
+
+set(_idasdk_lib_suffixes "")
+foreach(_idasdk_libdir IN LISTS _idasdk_libdirs)
+    list(APPEND _idasdk_lib_suffixes
+        "lib/${_idasdk_libdir}"
+        "src/lib/${_idasdk_libdir}")
+endforeach()
 
 set(_idasdk_hints "")
 if(IDASDK_ROOT)
@@ -48,9 +56,7 @@ find_path(IdaSDK_INCLUDE_DIR
 find_library(IdaSDK_LIBRARY
     NAMES ida
     HINTS ${_idasdk_hints}
-    PATH_SUFFIXES
-        "lib/${_idasdk_libdir}"
-        "src/lib/${_idasdk_libdir}"
+    PATH_SUFFIXES ${_idasdk_lib_suffixes}
     DOC "IDA kernel import/shared library")
 
 if(IdaSDK_INCLUDE_DIR AND EXISTS "${IdaSDK_INCLUDE_DIR}/pro.h")
@@ -89,5 +95,7 @@ mark_as_advanced(IdaSDK_INCLUDE_DIR IdaSDK_LIBRARY)
 unset(_idasdk_mac_arch)
 unset(_idasdk_mac_arch_count)
 unset(_idasdk_libdir)
+unset(_idasdk_libdirs)
+unset(_idasdk_lib_suffixes)
 unset(_idasdk_platform_def)
 unset(_idasdk_hints)

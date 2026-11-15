@@ -7,35 +7,62 @@ on:
   pull_request:
   workflow_dispatch:
 
-env:
-  IDASDK_REF: d5db59ab4e9d2ae92038e9520082affd0da6fe20
-
 jobs:
+  # ida-plugin.json drives the build: every entry of "idaVersions" is built
+  # against the matching IDA SDK and shipped as its own release archive.
+  plan:
+    name: Read ida-plugin.json
+    runs-on: ubuntu-latest
+    outputs:
+      ida_versions: ${{ steps.manifest.outputs.ida_versions }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # A release tag has to name the version declared in the manifest
+      # (tag 1.3 or v1.3 for version 1.3.0).
+      - if: github.ref_type == 'tag'
+        run: |
+          version=$(jq -r '.plugin.version' ida-plugin.json)
+          tag=${GITHUB_REF_NAME#v}
+          case "$version" in
+            "$tag" | "$tag.0" | "$tag.0.0") ;;
+            *)
+              echo "::error::tag '$GITHUB_REF_NAME' does not match version '$version' in ida-plugin.json"
+              exit 1
+              ;;
+          esac
+
+      - id: manifest
+        run: echo "ida_versions=$(jq -c '.plugin.idaVersions' ida-plugin.json)" >> "$GITHUB_OUTPUT"
+
   build:
+    name: IDA ${{ matrix.ida }} (${{ matrix.platform }})
+    needs: plan
     strategy:
       fail-fast: false
       matrix:
+        ida: ${{ fromJSON(needs.plan.outputs.ida_versions) }}
+        os: [ubuntu-latest, windows-latest, macos-latest]
         include:
           - os: ubuntu-latest
-            artifact: linux-x64
-            binary: build/ida_plugins/ida_discord_rpc.so
-            cmake_args: ''
+            platform: linux-x86_64
+            binary: ida-discord-rpc.so
           - os: windows-latest
-            artifact: windows-x64
-            binary: build/ida_plugins/ida_discord_rpc.dll
-            cmake_args: ''
+            platform: windows-x86_64
+            binary: ida-discord-rpc.dll
           - os: macos-latest
-            artifact: macos-universal
-            binary: build/ida_plugins/ida_discord_rpc.dylib
-            cmake_args: '-DCMAKE_OSX_ARCHITECTURES=arm64'
+            platform: macos-universal
+            binary: ida-discord-rpc.dylib
+            cmake_args: -DCMAKE_OSX_ARCHITECTURES=arm64
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
 
+      # The SDK of IDA x.y is tagged vx.y.0-release.
       - uses: actions/checkout@v4
         with:
           repository: HexRaysSA/ida-sdk
-          ref: ${{ env.IDASDK_REF }}
+          ref: v${{ matrix.ida }}.0-release
           path: lib/ida-sdk
 
       - if: runner.os == 'Linux'
@@ -48,16 +75,17 @@ jobs:
 
       - run: cmake --build build
 
+      # The first build is arm64; add an x86_64 build and merge both into one universal dylib.
       - if: runner.os == 'macOS'
         run: |
           cmake -S . -B build-x64 -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES=x86_64
           cmake --build build-x64
           lipo -create \
-            build/ida_plugins/ida_discord_rpc.dylib \
-            build-x64/ida_plugins/ida_discord_rpc.dylib \
-            -output ida_discord_rpc-universal.dylib
-          mv ida_discord_rpc-universal.dylib build/ida_plugins/ida_discord_rpc.dylib
-          archs=$(lipo -archs build/ida_plugins/ida_discord_rpc.dylib)
+            build/ida_plugins/${{ matrix.binary }} \
+            build-x64/ida_plugins/${{ matrix.binary }} \
+            -output universal.dylib
+          mv universal.dylib build/ida_plugins/${{ matrix.binary }}
+          archs=$(lipo -archs build/ida_plugins/${{ matrix.binary }})
           echo "universal dylib architectures: $archs"
           for want in arm64 x86_64; do
             case " $archs " in
@@ -68,16 +96,14 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ida_discord_rpc-${{ matrix.artifact }}
-          path: ${{ matrix.binary }}
+          name: ida-discord-rpc-${{ matrix.ida }}-${{ matrix.platform }}
+          path: build/ida_plugins/${{ matrix.binary }}
           if-no-files-found: error
 
-  release:
-    if: github.ref_type == 'tag'
+  package:
+    name: Package release archives
     needs: build
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -85,21 +111,35 @@ jobs:
         with:
           path: dist
 
-      - run: |
-          mkdir -p pkg/assets
-          cp ida-plugin.json pkg/
-          cp readme.md pkg/README.md
-          cp assets/ida-discord.png pkg/assets/
-          cp dist/ida_discord_rpc-linux-x64/ida_discord_rpc.so pkg/
-          cp dist/ida_discord_rpc-windows-x64/ida_discord_rpc.dll pkg/
-          cp dist/ida_discord_rpc-macos-universal/ida_discord_rpc.dylib pkg/
-          cd pkg && zip -r "../ida_discord_rpc-${GITHUB_REF_NAME}.zip" . && cd ..
-          unzip -l ida_discord_rpc-*.zip
+      - run: bash .github/package.sh dist archives
 
       - run: pipx install ida-hcli
 
-      - run: hcli plugin lint "ida_discord_rpc-${GITHUB_REF_NAME}.zip"
+      - run: |
+          for archive in archives/*.zip; do
+            unzip -l "$archive"
+            hcli plugin lint "$archive"
+          done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-archives
+          path: archives/*.zip
+          if-no-files-found: error
+
+  release:
+    name: Publish GitHub release
+    if: github.ref_type == 'tag'
+    needs: package
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-archives
+          path: archives
 
       - uses: softprops/action-gh-release@v2
         with:
-          files: ida_discord_rpc-*.zip
+          files: archives/*.zip

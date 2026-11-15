@@ -1,6 +1,7 @@
-#include "rpc_settings.hpp"
-#include "utils/log/log.hpp"
+#include "ida_discord_rpc/gui/rpc_settings.hpp"
+#include "ida_discord_rpc/util/log.hpp"
 
+#include <pro.h> // the IDA 9.0 SDK's diskio.hpp does not include it itself
 #include <diskio.hpp>
 
 #include <fstream>

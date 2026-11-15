@@ -1,8 +1,8 @@
-#include "settings_dialog.hpp"
-#include "rpc_settings.hpp"
+#include "ida_discord_rpc/gui/settings_dialog.hpp"
+#include "ida_discord_rpc/gui/rpc_settings.hpp"
 
-#include "utils/log/log.hpp"
-#include "core/discord/discord_rpc_helper.hpp"
+#include "ida_discord_rpc/util/log.hpp"
+#include "ida_discord_rpc/discord/discord_rpc_helper.hpp"
 
 #include <ida.hpp>
 #include <kernwin.hpp>

@@ -1,8 +1,8 @@
-#include "discord_rpc_helper.hpp"
-#include "rich_presence.hpp"
-#include "utils/ida/ida_helper.hpp"
-#include "core/gui/rpc_settings.hpp"
-#include "utils/log/log.hpp"
+#include "ida_discord_rpc/discord/discord_rpc_helper.hpp"
+#include "ida_discord_rpc/discord/rich_presence.hpp"
+#include "ida_discord_rpc/util/ida_helper.hpp"
+#include "ida_discord_rpc/gui/rpc_settings.hpp"
+#include "ida_discord_rpc/util/log.hpp"
 
 #include <pro.h>
 #include <kernwin.hpp>

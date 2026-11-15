@@ -1,5 +1,5 @@
-#include "rich_presence.hpp"
-#include "utils/log/log.hpp"
+#include "ida_discord_rpc/discord/rich_presence.hpp"
+#include "ida_discord_rpc/util/log.hpp"
 
 #include <string>
 

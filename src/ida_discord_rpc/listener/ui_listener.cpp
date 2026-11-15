@@ -1,5 +1,5 @@
-#include "ui_listener.hpp"
-#include "utils/log/log.hpp"
+#include "ida_discord_rpc/listener/ui_listener.hpp"
+#include "ida_discord_rpc/util/log.hpp"
 
 #include <loader.hpp>
 #include <name.hpp>

@@ -1,5 +1,5 @@
-#include "idb_listener.hpp"
-#include "core/discord/discord_rpc_helper.hpp"
+#include "ida_discord_rpc/listener/idb_listener.hpp"
+#include "ida_discord_rpc/discord/discord_rpc_helper.hpp"
 
 ssize_t idaapi idarpc::listener::IDBListener::on_event(ssize_t code, va_list va)
 {
