@@ -8,8 +8,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  # ida-plugin.json drives the build: every entry of "idaVersions" is built
-  # against the matching IDA SDK and shipped as its own release archive.
   plan:
     name: Read ida-plugin.json
     runs-on: ubuntu-latest
@@ -17,9 +15,6 @@ jobs:
       ida_versions: ${{ steps.manifest.outputs.ida_versions }}
     steps:
       - uses: actions/checkout@v4
-
-      # A release tag has to name the version declared in the manifest
-      # (tag 1.3 or v1.3 for version 1.3.0).
       - if: github.ref_type == 'tag'
         run: |
           version=$(jq -r '.plugin.version' ida-plugin.json)
@@ -56,10 +51,11 @@ jobs:
             cmake_args: -DCMAKE_OSX_ARCHITECTURES=arm64
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out the plugin
+        uses: actions/checkout@v4
 
-      # The SDK of IDA x.y is tagged vx.y.0-release.
-      - uses: actions/checkout@v4
+      - name: Check out the IDA SDK
+        uses: actions/checkout@v4
         with:
           repository: HexRaysSA/ida-sdk
           ref: v${{ matrix.ida }}.0-release
@@ -75,7 +71,6 @@ jobs:
 
       - run: cmake --build build
 
-      # The first build is arm64; add an x86_64 build and merge both into one universal dylib.
       - if: runner.os == 'macOS'
         run: |
           cmake -S . -B build-x64 -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES=x86_64
